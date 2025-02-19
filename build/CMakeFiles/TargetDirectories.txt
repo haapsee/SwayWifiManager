@@ -1,0 +1,3 @@
+/home/haapsee/Projects/sway-network-manager/build/CMakeFiles/SwayWifiManager.dir
+/home/haapsee/Projects/sway-network-manager/build/CMakeFiles/edit_cache.dir
+/home/haapsee/Projects/sway-network-manager/build/CMakeFiles/rebuild_cache.dir
