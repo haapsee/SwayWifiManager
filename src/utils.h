@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-#include "wifi_scanner.h"
+#ifndef UTILS_H
+#define UTILS_H
 
+#include <string>
 
-int main() {
-    WifiScanner scanner;
-    scanner.scan();
-    scanner.print();
-
-    return 0;
+namespace utils {
+    std::string removeTrailingWhitespace(std::string str);
 }
+
+#endif // UTILS_H

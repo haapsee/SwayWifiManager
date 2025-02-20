@@ -22,13 +22,9 @@
  * SOFTWARE.
  */
 
-#include "wifi_scanner.h"
+#include "utils.h"
 
-
-int main() {
-    WifiScanner scanner;
-    scanner.scan();
-    scanner.print();
-
-    return 0;
+std::string utils::removeTrailingWhitespace(std::string str) {
+    size_t endpos = str.find_last_not_of(" \t");
+    return (std::string::npos != endpos) ? str.substr(0, endpos + 1) : str;
 }
