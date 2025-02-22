@@ -26,9 +26,15 @@
 #define UTILS_H
 
 #include <string>
+#include <yaml-cpp/yaml.h>
+#include <gtkmm-4.0>
+
 
 namespace utils {
     std::string removeTrailingWhitespace(std::string str);
+
+    YAML::Node readYamlFile(std::string filename);
+    void writeYamlFile(std::string filename, YAML::Node data);
 }
 
 #endif // UTILS_H

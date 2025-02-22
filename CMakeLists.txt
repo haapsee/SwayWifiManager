@@ -21,7 +21,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-
 cmake_minimum_required(VERSION 3.10)
 
 # Set the project name
@@ -31,11 +30,22 @@ project(SwayWifiManager)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# Include FetchContent module
+include(FetchContent)
+
+# Declare and make available yaml-cpp
+FetchContent_Declare(
+    yaml-cpp
+    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+    GIT_TAG 0.8.0
+)
+FetchContent_MakeAvailable(yaml-cpp)
+
 # Add the executable
 add_executable(SwayWifiManager
     src/main.cpp
-    src/utils.cpp
-    src/wifi_scanner.cpp
+    src/utils/utils.cpp
+    src/wifi_scanner/wifi_scanner.cpp
 )
 
 # Include directories
@@ -44,8 +54,13 @@ target_include_directories(SwayWifiManager PUBLIC
     "${PROJECT_SOURCE_DIR}/src"
 )
 
+# Link yaml-cpp library
+target_link_libraries(SwayWifiManager PUBLIC yaml-cpp::yaml-cpp)
 
+# Find GTKMM
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
 target_include_directories(SwayWifiManager PRIVATE ${GTKMM_INCLUDE_DIRS})
 target_link_libraries(SwayWifiManager PRIVATE ${GTKMM_LIBRARIES})
+
+

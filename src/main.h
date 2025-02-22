@@ -27,6 +27,6 @@
 
 #include <iostream>
 
-#include "wifi_scanner.h"
+#include "wifi_scanner/wifi_scanner.h"
 
 #endif // MAIN_H

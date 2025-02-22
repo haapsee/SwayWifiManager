@@ -1,6 +1,6 @@
 #!/bin/bash
-echo $DISPLAY
-export DISPLAY=:0
+#echo $DISPLAY
+#export DISPLAY=:0
 
 # Build the project
 mkdir -p build

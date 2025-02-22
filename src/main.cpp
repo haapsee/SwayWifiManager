@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-#include "wifi_scanner.h"
+#include "wifi_scanner/wifi_scanner.h"
 
 
 int main() {
