@@ -33,6 +33,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Include FetchContent module
 include(FetchContent)
 
+# Find GTKMM
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
+
 # Declare and make available yaml-cpp
 FetchContent_Declare(
     yaml-cpp
@@ -45,6 +49,7 @@ FetchContent_MakeAvailable(yaml-cpp)
 add_executable(SwayWifiManager
     src/main.cpp
     src/utils/utils.cpp
+    src/networking/nmcli/nmcli.cpp
     src/wifi_scanner/wifi_scanner.cpp
 )
 
@@ -53,14 +58,10 @@ target_include_directories(SwayWifiManager PUBLIC
     "${PROJECT_BINARY_DIR}"
     "${PROJECT_SOURCE_DIR}/src"
 )
+target_include_directories(SwayWifiManager PRIVATE ${GTKMM_INCLUDE_DIRS})
 
 # Link yaml-cpp library
 target_link_libraries(SwayWifiManager PUBLIC yaml-cpp::yaml-cpp)
-
-# Find GTKMM
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
-target_include_directories(SwayWifiManager PRIVATE ${GTKMM_INCLUDE_DIRS})
 target_link_libraries(SwayWifiManager PRIVATE ${GTKMM_LIBRARIES})
 
 

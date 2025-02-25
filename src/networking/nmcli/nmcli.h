@@ -21,20 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+ 
+#ifndef NMCLI_H
+#define NMCLI_H
 
-#ifndef UTILS_H
-#define UTILS_H
+#include "utils/utils.h"
+#include "networking/networking_interface.h"
 
-#include <string>
-#include <yaml-cpp/yaml.h>
-// #include <gtkmm/window.h>
+class Nmcli : public NetworkingInterface {
+public:
+    std::vector<WifiNetwork> getAvailableNetworks() const override;
+    std::string getStatus() const override;
+    std::string getCurrentConnection() const override;
+    bool createConnection(const std::string& ssid, const std::string& password) override;
+    bool updateConnection(const std::string& ssid, const std::string& password) override;
+    bool deleteConnection(const std::string& ssid) override;
+    bool activateConnection(const std::string& ssid) override;
+    bool deactivateConnection(const std::string& ssid) override;
+    bool scanNetworks() override;
 
+};
 
-namespace utils {
-    std::string removeTrailingWhitespace(std::string str);
-
-    YAML::Node readYamlFile(std::string filename);
-    void writeYamlFile(std::string filename, YAML::Node data);
-}
-
-#endif // UTILS_H
+#endif // NMCLI_H

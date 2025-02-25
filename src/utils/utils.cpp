@@ -24,7 +24,8 @@
 
 #include "utils.h"
 
+
 std::string utils::removeTrailingWhitespace(std::string str) {
-    size_t endpos = str.find_last_not_of(" \t");
+    size_t endpos = str.find_last_not_of(" \t\n\r");
     return (std::string::npos != endpos) ? str.substr(0, endpos + 1) : str;
 }

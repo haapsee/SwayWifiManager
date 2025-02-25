@@ -22,19 +22,39 @@
  * SOFTWARE.
  */
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef NETWORKING_INTERFACE_H
+#define NETWORKING_INTERFACE_H
+
 
 #include <string>
-#include <yaml-cpp/yaml.h>
-// #include <gtkmm/window.h>
+#include <vector>
 
 
-namespace utils {
-    std::string removeTrailingWhitespace(std::string str);
+struct WifiNetwork {
+    bool inUse;
+    std::string ssid;
+    std::string mode;
+    std::string channel;
+    std::string signal;
+    std::string security;
+    std::string active;
+    bool is_saved;
+};
 
-    YAML::Node readYamlFile(std::string filename);
-    void writeYamlFile(std::string filename, YAML::Node data);
-}
 
-#endif // UTILS_H
+class NetworkingInterface {
+public:
+
+    virtual std::vector<WifiNetwork> getAvailableNetworks() const = 0;
+    // virtual std::vector<WifiNetwork> getSavedNetworks() const = 0;
+    virtual bool createConnection(const std::string& ssid, const std::string& password) = 0;
+    virtual bool updateConnection(const std::string& ssid, const std::string& password) = 0;
+    virtual bool deleteConnection(const std::string& ssid) = 0;
+    virtual bool activateConnection(const std::string& ssid) = 0;
+    virtual bool deactivateConnection(const std::string& ssid) = 0;
+    virtual std::string getStatus() const = 0;
+    virtual std::string getCurrentConnection() const = 0;
+    virtual bool scanNetworks() = 0;
+};
+
+#endif
