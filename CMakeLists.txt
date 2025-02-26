@@ -50,7 +50,6 @@ add_executable(SwayWifiManager
     src/main.cpp
     src/utils/utils.cpp
     src/networking/nmcli/nmcli.cpp
-    src/wifi_scanner/wifi_scanner.cpp
 )
 
 # Include directories
