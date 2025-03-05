@@ -34,36 +34,74 @@ MainWindow::MainWindow(std::vector<WifiNetwork> wifi_networks)
     button.set_halign(Gtk::Align::END);
     button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_button_close));
 
-    std::vector<Glib::ustring> wifi_networks_str(wifi_networks.size());
+    list_store = Gio::ListStore<WifiNetworkColumns>::create();
+
     for (int i = 0; i < wifi_networks.size(); i++) {
-        WifiNetwork network = wifi_networks[i];
-        wifi_networks_str[i] = network.ssid + " (" + network.signal + ")" + 
-            " \t[" + network.security + "]" + 
-            " \t[" + network.mode + "]" + 
-            " \t[" + network.channel + "]" + 
-            " \t[" + network.active + "]" + 
-            " \t[" + std::to_string(network.inUse) + "]" +
-            " \t[" + std::to_string(network.is_saved) + "]";
+        WifiNetwork wifi_network = wifi_networks[i];
+        list_store->append(WifiNetworkColumns::create(
+            wifi_network.ssid,
+            wifi_network.mode,
+            wifi_network.channel,
+            wifi_network.signal,
+            wifi_network.security
+        ));
     }
 
-    string_list = Gtk::StringList::create(wifi_networks_str);
-    auto selection_model = Gtk::SingleSelection::create(string_list);
-    selection_model->set_autoselect(false);
-    selection_model->set_can_unselect(true);
+    auto selection_model = Gtk::SingleSelection::create(list_store);
     
-    Gtk::ListView listView;
-    listView.set_model(selection_model);
-
     auto factory = Gtk::SignalListItemFactory::create();
-    factory->signal_setup().connect(
-      sigc::mem_fun(*this, &MainWindow::on_setup_label));
+    factory->signal_setup().connect(sigc::bind(sigc::mem_fun(*this,
+        &MainWindow::on_setup_label), Gtk::Align::END));
     factory->signal_bind().connect(
-      sigc::mem_fun(*this, &MainWindow::on_bind_name));
-    listView.set_factory(factory);
+        sigc::mem_fun(*this, &MainWindow::on_bind_ssid));
+    auto column_ssid = Gtk::ColumnViewColumn::create("SSID", factory);
+    column_ssid->set_expand(true);
+
+    factory = Gtk::SignalListItemFactory::create();
+    factory->signal_setup().connect(sigc::bind(sigc::mem_fun(*this,
+        &MainWindow::on_setup_label), Gtk::Align::END));
+    factory->signal_bind().connect(
+        sigc::mem_fun(*this, &MainWindow::on_bind_mode));
+    auto column_mode = Gtk::ColumnViewColumn::create("Mode", factory);
+    column_mode->set_expand(true);
+
+    factory = Gtk::SignalListItemFactory::create();
+    factory->signal_setup().connect(sigc::bind(sigc::mem_fun(*this,
+        &MainWindow::on_setup_label), Gtk::Align::END));
+    factory->signal_bind().connect(
+        sigc::mem_fun(*this, &MainWindow::on_bind_channel));
+    auto column_channel = Gtk::ColumnViewColumn::create("Channel", factory);
+    column_channel->set_expand(true);
+
+    factory = Gtk::SignalListItemFactory::create();
+    factory->signal_setup().connect(sigc::bind(sigc::mem_fun(*this,
+        &MainWindow::on_setup_label), Gtk::Align::END));
+    factory->signal_bind().connect(
+        sigc::mem_fun(*this, &MainWindow::on_bind_signal));
+    auto column_signal = Gtk::ColumnViewColumn::create("Signal", factory);
+    column_signal->set_expand(true);
+
+    factory = Gtk::SignalListItemFactory::create();
+    factory->signal_setup().connect(sigc::bind(sigc::mem_fun(*this,
+        &MainWindow::on_setup_label), Gtk::Align::END));
+    factory->signal_bind().connect(
+        sigc::mem_fun(*this, &MainWindow::on_bind_security));
+    auto column_security = Gtk::ColumnViewColumn::create("Security", factory);
+    column_security->set_expand(true);
+
+    Gtk::ColumnView columnView;
+    columnView.add_css_class("data-table");
+    columnView.set_model(selection_model);
+    columnView.append_column(column_ssid);
+    columnView.append_column(column_mode);
+    columnView.append_column(column_channel);
+    columnView.append_column(column_signal);
+    columnView.append_column(column_security);
+
 
     Gtk::ScrolledWindow scrolledWindow;
     scrolledWindow.set_expand(true);
-    scrolledWindow.set_child(listView);
+    scrolledWindow.set_child(columnView);
 
     Gtk::Box vbox(Gtk::Orientation::VERTICAL);
     vbox.append(scrolledWindow);
@@ -77,21 +115,70 @@ MainWindow::~MainWindow()
 {
 }
 
-void MainWindow::on_setup_label(const Glib::RefPtr<Gtk::ListItem>& list_item)
+void MainWindow::on_setup_label(const Glib::RefPtr<Gtk::ListItem>& list_item, Gtk::Align halign)
 {
-    list_item->set_child(*Gtk::make_managed<Gtk::Label>("", Gtk::Align::START));
+    list_item->set_child(*Gtk::make_managed<Gtk::Label>("", halign));
 }
 
-void MainWindow::on_bind_name(const Glib::RefPtr<Gtk::ListItem>& list_item)
+void MainWindow::on_bind_ssid(const Glib::RefPtr<Gtk::ListItem>& list_item)
 {
-    auto pos = list_item->get_position();
-    if (pos == GTK_INVALID_LIST_POSITION)
+    auto col = std::dynamic_pointer_cast<WifiNetworkColumns>(list_item->get_item());
+    if (!col)
         return;
     auto label = dynamic_cast<Gtk::Label*>(list_item->get_child());
     if (!label)
         return;
-    label->set_text(string_list->get_string(pos));
+    label->set_halign(Gtk::Align::START);
+    label->set_text(col->ssid);
 }
+
+void MainWindow::on_bind_mode(const Glib::RefPtr<Gtk::ListItem>& list_item)
+{
+    auto col = std::dynamic_pointer_cast<WifiNetworkColumns>(list_item->get_item());
+    if (!col)
+        return;
+    auto label = dynamic_cast<Gtk::Label*>(list_item->get_child());
+    if (!label)
+        return;
+    label->set_halign(Gtk::Align::START);
+    label->set_text(col->mode);
+}
+
+void MainWindow::on_bind_channel(const Glib::RefPtr<Gtk::ListItem>& list_item)
+{
+    auto col = std::dynamic_pointer_cast<WifiNetworkColumns>(list_item->get_item());
+    if (!col)
+        return;
+    auto label = dynamic_cast<Gtk::Label*>(list_item->get_child());
+    if (!label)
+        return;
+    label->set_halign(Gtk::Align::START);
+    label->set_text(col->channel);
+}
+
+void MainWindow::on_bind_signal(const Glib::RefPtr<Gtk::ListItem>& list_item)
+{
+    auto col = std::dynamic_pointer_cast<WifiNetworkColumns>(list_item->get_item());
+    if (!col)
+        return;
+    auto label = dynamic_cast<Gtk::Label*>(list_item->get_child());
+    if (!label)
+        return;
+    label->set_halign(Gtk::Align::START);
+    label->set_text(col->signal);
+}
+
+void MainWindow::on_bind_security(const Glib::RefPtr<Gtk::ListItem>& list_item)
+{
+    auto col = std::dynamic_pointer_cast<WifiNetworkColumns>(list_item->get_item());
+    if (!col)
+        return;
+    auto label = dynamic_cast<Gtk::Label*>(list_item->get_child());
+    if (!label)
+        return;
+    label->set_text(col->security);
+}
+
 
 void MainWindow::on_button_close()
 {
