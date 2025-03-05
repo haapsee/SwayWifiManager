@@ -48,6 +48,7 @@ FetchContent_MakeAvailable(yaml-cpp)
 # Add the executable
 add_executable(SwayWifiManager
     src/main.cpp
+    src/gui/gtk.cpp
     src/utils/utils.cpp
     src/networking/nmcli/nmcli.cpp
 )

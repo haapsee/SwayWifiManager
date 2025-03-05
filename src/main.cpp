@@ -26,6 +26,7 @@
 #include <vector>
 #include "networking/networking_interface.h"
 #include "networking/nmcli/nmcli.h"
+#include "gui/gtk.h"
 
 
 int main() {
@@ -33,16 +34,7 @@ int main() {
     nmcli.scanNetworks();
     std::vector<WifiNetwork> wifi_networks = nmcli.getAvailableNetworks();
 
-    for (const auto& network : wifi_networks) {
-        std::cout << "SSID: " << network.ssid << std::endl;
-        std::cout << "Mode: " << network.mode << std::endl;
-        std::cout << "Channel: " << network.channel << std::endl;
-        std::cout << "Signal: " << network.signal << std::endl;
-        std::cout << "Security: " << network.security << std::endl;
-        std::cout << "Active: " << network.active << std::endl;
-        std::cout << "In use: " << network.inUse << std::endl;
-        std::cout << std::endl;
-    }
-
+    GtkManager gtkManager;
+    gtkManager.createWindow(wifi_networks);
     return 0;
 }
